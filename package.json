@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "'jessa'",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "api": "nodemon server.js"
+
   },
   "dependencies": {
     "cors": "^2.8.5",

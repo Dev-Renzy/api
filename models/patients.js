@@ -17,7 +17,7 @@ var patientModel = new Schema({
     emercontnumber: {type: String, required:true},
     emercontaddress: {type: String, required:true},
     emercontemail: {type: String},
-    relationship: {type: String, required:true},
+    relationship: {type: String, required:true}
 });
 
 var PatientDetails = mongoose.model("PatientDetails", patientModel);
