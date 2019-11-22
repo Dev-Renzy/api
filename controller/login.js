@@ -1,7 +1,7 @@
-var model = require("../models/account");
-var jwt = require("jsonwebtoken"); //to create token(encrypted string) for authentication
-var Response = require("../models/response");
-var response = new Response();
+const model = require("../models/account");
+const jwt = require("jsonwebtoken"); //to create token(encrypted string) for authentication
+const Response = require("../models/response");
+const response = new Response();
 
 module.exports.login = (credentials, res) => {
   console.log(credentials);
