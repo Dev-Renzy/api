@@ -39,11 +39,21 @@ app.post("/insert", (req, res) => {
 
 //Patients
 app.get("/patient/retrieve", (req, res) => {
-  PatientDetails.find({},{fname:1,lname:1,age:1}, (err, data) => {
+  PatientDetails.find({}, { fname: 1, lname: 1, age: 1, currentdate:1 }, (err, data) => {
     if (err) {
       return res.status(404).send("Error while getting list of patients!");
     }
     return res.send({ data });
+  });
+});
+
+app.get("/patient/:id", (req, res) => {
+  let id = req.params.id;
+  PatientDetails.findById(id, (err, dbres) => {
+    if (err) {
+      return res.status(404).send("Error while getting list of patients!");
+    }
+    return res.send({ info: dbres });
   });
 });
 
@@ -62,14 +72,11 @@ app.post("/patient/create", (req, res) => {
 });
 
 app.post("/patient/update/:id", (req, res) => {
-  console.log(req.body);
-  PatientDetails.findByIdAndUpdate(
-    req.params.id, //from database
-    req.body, //from the front end
-    { new: true },
-    (err, data) => {
+  let id = req.params.id
+  let updateInfo = req.body
+  PatientDetails.findByIdAndUpdate(id,updateInfo, (err, dbres) => {
       if (err) return res.status(404).send({ error: err.message });
-      return res.send({ message: "Service is successfully updated", data });
+      return res.send({ message: "Service is successfully updated", dbres });
     }
   );
 });
