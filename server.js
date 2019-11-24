@@ -7,7 +7,8 @@ const login = require("./controller/login");
 const insert = require("./controller/insert");
 const verify = require("./controller/verify");
 const PatientDetails = require("./models/patients");
-const records = require("./models/records");
+const MedicalRecords = require("./models/records");
+
 
 const PORT = process.env.PORT || 4000;
 //middleware
@@ -39,12 +40,16 @@ app.post("/insert", (req, res) => {
 
 //Patients
 app.get("/patient/retrieve", (req, res) => {
-  PatientDetails.find({}, { fname: 1, lname: 1, age: 1, currentdate:1 }, (err, data) => {
-    if (err) {
-      return res.status(404).send("Error while getting list of patients!");
+  PatientDetails.find(
+    {},
+    { fname: 1, lname: 1, age: 1, currentdate: 1 },
+    (err, data) => {
+      if (err) {
+        return res.status(404).send("Error while getting list of patients!");
+      }
+      return res.send({ data });
     }
-    return res.send({ data });
-  });
+  );
 });
 
 app.get("/patient/:id", (req, res) => {
@@ -58,27 +63,24 @@ app.get("/patient/:id", (req, res) => {
 });
 
 app.post("/patient/create", (req, res) => {
-  console.log("test");
-  try {
-    const data = new PatientDetails(req.body);
-    data.save((err, dbres) => {
-      if (err) return res.status(404).send({ message: err.message });
-      console.log(dbres);
-      return res.send({ info: dbres, status: true });
-    });
-  } catch (err) {
-    res.send({ message: err.message });
-  }
+  console.log("test patient add");
+
+  const data = new PatientDetails(req.body);
+  console.log("data: ", data)
+  data.save((err, dbres) => {
+    if (err) return res.status(404).send({ message: err.message });
+    console.log(dbres);
+    return res.send({ info: dbres, status: true });
+  });
 });
 
 app.post("/patient/update/:id", (req, res) => {
-  let id = req.params.id
-  let updateInfo = req.body
-  PatientDetails.findByIdAndUpdate(id,updateInfo, (err, dbres) => {
-      if (err) return res.status(404).send({ error: err.message });
-      return res.send({ message: "Service is successfully updated", dbres });
-    }
-  );
+  let id = req.params.id;
+  let updateInfo = req.body;
+  PatientDetails.findByIdAndUpdate(id, updateInfo, (err, dbres) => {
+    if (err) return res.status(404).send({ error: err.message });
+    return res.send({ message: "Service is successfully updated", dbres });
+  });
 });
 
 app.post("/patient/delete/:id", (req, res) => {
@@ -89,43 +91,44 @@ app.post("/patient/delete/:id", (req, res) => {
 });
 
 //records
-app.get("/record/retrieve", (req, res) => {
-  records.find({}, (err, data) => {
+app.get("/record/:id", (req, res) => {
+  console.log("getting records")
+  let id = req.params.id;
+  MedicalRecords.find({ ownerID: id }, (err, dbres) => {
     if (err) {
-      return res.status(404).send("Error while getting list of services!");
+      return res.status(404).send("Error while getting list of patients!");
+      
     }
-    return res.send({ data });
+    console.log("ljdgn", dbres)
+    return res.send({ info: dbres });
   });
 });
-
 app.post("/record/create", (req, res) => {
-  const data = new records({
-    title: req.body.title,
-    findings: req.body.findings,
-    date: req.body.date
-  });
-  data.save(err => {
+  console.log("adding records")
+  const data = new MedicalRecords(req.body);
+  console.log("adding data: ",data)
+  data.save((err,dbres) => {
     if (err) return res.status(404).send({ message: err.message });
-    return res.send({ data });
+    return res.send({ dbres });
   });
 });
 
-app.post("/record/update/:id", (req, res) => {
-  console.log(req.body);
-  records.findByIdAndUpdate(
-    req.params.id, //from database
-    req.body, //from the front end
-    { new: true },
-    (err, data) => {
-      if (err) return res.status(404).send({ error: err.message });
-      return res.send({ message: "Service is successfully updated", data });
-    }
-  );
-});
+// app.post("/record/update/:id", (req, res) => {
+//   console.log(req.body);
+//   records.findByIdAndUpdate(
+//     req.params.id, //from database
+//     req.body, //from the front end
+//     { new: true },
+//     (err, data) => {
+//       if (err) return res.status(404).send({ error: err.message });
+//       return res.send({ message: "Service is successfully updated", data });
+//     }
+//   );
+// });
 
-app.post("/record/delete/:id", (req, res) => {
-  records.findByIdAndRemove(req.params.id, (err, data) => {
-    if (err) return res.status(404).send({ error: err.message });
-    return res.send({ message: "Service is successfully deleted!", data });
-  });
-});
+// app.post("/record/delete/:id", (req, res) => {
+//   records.findByIdAndRemove(req.params.id, (err, data) => {
+//     if (err) return res.status(404).send({ error: err.message });
+//     return res.send({ message: "Service is successfully deleted!", data });
+//   });
+// });
