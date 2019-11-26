@@ -8,7 +8,7 @@ const insert = require("./controller/insert");
 const verify = require("./controller/verify");
 const PatientDetails = require("./models/patients");
 const MedicalRecords = require("./models/records");
-
+const Account = require("./models/account");
 
 const PORT = process.env.PORT || 4000;
 //middleware
@@ -28,7 +28,26 @@ app.get("/", (req, res) => {
 });
 app.post("/login", (req, res) => {
   console.log(req.body);
-  login.login(req.body, res);
+  let usernamei = req.body.username;
+  let passwordi = req.body.password;
+  Account.findOne({ username: usernamei }, function(err, dbres) {
+    if (err) {
+      res.send({
+        status: false,
+        sms: err
+      });
+    } else {
+      if (dbres != null) {
+        if (passwordi == dbres.password) {
+          res.send({ status: true, sms: "success", user: dbres });
+        } else {
+          res.send({ status: false, sms: "Wrong Password" });
+        }
+      }else{
+        res.send({status: false, sms: "Username Not Found"})
+      }
+    }
+  });
 });
 app.get("/verify/:token", (req, res) => {
   verify.verify(req.params.token, res);
@@ -66,7 +85,7 @@ app.post("/patient/create", (req, res) => {
   console.log("test patient add");
 
   const data = new PatientDetails(req.body);
-  console.log("data: ", data)
+  console.log("data: ", data);
   data.save((err, dbres) => {
     if (err) return res.status(404).send({ message: err.message });
     console.log(dbres);
@@ -92,22 +111,21 @@ app.post("/patient/delete/:id", (req, res) => {
 
 //records
 app.get("/record/:id", (req, res) => {
-  console.log("getting records")
+  console.log("getting records");
   let id = req.params.id;
   MedicalRecords.find({ ownerID: id }, (err, dbres) => {
     if (err) {
       return res.status(404).send("Error while getting list of patients!");
-      
     }
-    console.log("ljdgn", dbres)
+    console.log("ljdgn", dbres);
     return res.send({ info: dbres });
   });
 });
 app.post("/record/create", (req, res) => {
-  console.log("adding records")
+  console.log("adding records");
   const data = new MedicalRecords(req.body);
-  console.log("adding data: ",data)
-  data.save((err,dbres) => {
+  console.log("adding data: ", data);
+  data.save((err, dbres) => {
     if (err) return res.status(404).send({ message: err.message });
     return res.send({ dbres });
   });
