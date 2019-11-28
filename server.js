@@ -39,7 +39,9 @@ app.post("/login", (req, res) => {
     } else {
       if (dbres != null) {
         if (passwordi == dbres.password) {
-          res.send({ status: true, sms: "success", user: dbres });
+          res.send({ status: true, sms: "success", user: dbres
+        
+         });
         } else {
           res.send({ status: false, sms: "Wrong Password" });
         }
@@ -131,22 +133,34 @@ app.post("/record/create", (req, res) => {
   });
 });
 
-// app.post("/record/update/:id", (req, res) => {
-//   console.log(req.body);
-//   records.findByIdAndUpdate(
-//     req.params.id, //from database
-//     req.body, //from the front end
-//     { new: true },
-//     (err, data) => {
-//       if (err) return res.status(404).send({ error: err.message });
-//       return res.send({ message: "Service is successfully updated", data });
-//     }
-//   );
-// });
+// Users
+app.get("/user/:id", (req, res) => {
+  console.log("getting records");
+  let id = req.params.id;
+  Account.find({ ownerID: id }, (err, dbres) => {
+    if (err) {
+      return res.status(404).send("Error while getting list of patients!");
+    }
+    console.log("ljdgn", dbres);
+    return res.send({ info: dbres });
+  });
+});
+app.post("/user/create", (req, res) => {
+  console.log("adding records");
+  const data = new Account(req.body);
+  console.log("adding data: ", data);
+  data.save((err, dbres) => {
+    if (err) return res.status(404).send({ message: err.message });
+    return res.send({ dbres });
+  });
+});
+app.get("/allusers",(req,res)=>{
+  Account.find({},(err,dbres)=>{
+    if(err){
+      return res.send({error:err, status: false})
+    }else{
+      return res.send({ status: true,data:dbres})
 
-// app.post("/record/delete/:id", (req, res) => {
-//   records.findByIdAndRemove(req.params.id, (err, data) => {
-//     if (err) return res.status(404).send({ error: err.message });
-//     return res.send({ message: "Service is successfully deleted!", data });
-//   });
-// });
+    }
+  })
+})
