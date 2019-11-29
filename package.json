@@ -7,7 +7,6 @@
     "test": "'jessa'",
     "start": "nodemon server.js",
     "api": "nodemon server.js"
-
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports.connect = mongoose.connect('mongodb://127.0.0.1:27017/sampleDB', {
+module.exports.connect = mongoose.connect('mongodb://127.0.0.1:27017/sampledb', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,

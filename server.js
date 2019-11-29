@@ -154,7 +154,7 @@ app.post("/user/create", (req, res) => {
     return res.send({ dbres });
   });
 });
-app.get("/allusers",(req,res)=>{
+app.get("/getusers",(req,res)=>{
   Account.find({},(err,dbres)=>{
     if(err){
       return res.send({error:err, status: false})
