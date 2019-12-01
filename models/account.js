@@ -8,7 +8,8 @@ var accountModel = new Schema({
   firstname: { type: String, required: true },
   middlename: { type: String },
   lastname: { type: String, required: true },
-  profession: { type: String, required: true }
+  profession: { type: String, required: true },
+  haschange:{type:Boolean, required:true}
 });
 
 var Account = mongoose.model("Account", accountModel);

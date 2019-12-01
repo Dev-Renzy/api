@@ -51,6 +51,26 @@ app.post("/login", (req, res) => {
     }
   });
 });
+
+app.post("/updatePassword/:id",(req,res)=>{
+  let id = req.params.id
+  let newpass = req.body
+  Account.findByIdAndUpdate(id, newpass,(err,resp)=>{
+    if (err) {
+      res.send({
+        status: false,
+        sms: err
+      });
+    }else{
+      res.send({
+        status: true,
+        sms: "updated successfully!!",
+        dbres:resp
+      });
+    }
+  })
+})
+
 app.get("/verify/:token", (req, res) => {
   verify.verify(req.params.token, res);
 });
@@ -117,7 +137,7 @@ app.get("/record/:id", (req, res) => {
   let id = req.params.id;
   MedicalRecords.find({ ownerID: id }, (err, dbres) => {
     if (err) {
-      return res.status(404).send("Error while getting list of patients!");
+      return res.status(404).send("Error while getting records!");
     }
     console.log("ljdgn", dbres);
     return res.send({ info: dbres });
@@ -134,17 +154,16 @@ app.post("/record/create", (req, res) => {
 });
 
 // Users
-app.get("/user/:id", (req, res) => {
-  console.log("getting records");
+app.get("/users/:id", (req, res) => {
   let id = req.params.id;
-  Account.find({ ownerID: id }, (err, dbres) => {
+  Account.findById(id, (err, dbres) => {
     if (err) {
-      return res.status(404).send("Error while getting list of patients!");
+      return res.status(404).send("Error while getting list of User!");
     }
-    console.log("ljdgn", dbres);
     return res.send({ info: dbres });
   });
 });
+
 app.post("/user/create", (req, res) => {
   console.log("adding records");
   const data = new Account(req.body);
@@ -164,3 +183,18 @@ app.get("/getusers",(req,res)=>{
     }
   })
 })
+app.post("/user/update/:id", (req, res) => {
+  let id = req.params.id;
+  let updateInfo = req.body;
+  Account.findByIdAndUpdate(id, updateInfo, (err, dbres) => {
+    if (err) return res.status(404).send({ error: err.message });
+    return res.send({ message: "User is successfully updated", dbres });
+  });
+});
+
+app.post("/user/delete/:id", (req, res) => {
+  Account.findByIdAndRemove(req.params.id, (err, data) => {
+    if (err) return res.status(404).send({ error: err.message });
+    return res.send({ message: "User is successfully deleted!", data });
+  });
+});
